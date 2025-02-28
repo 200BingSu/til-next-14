@@ -1,13 +1,44 @@
-# api 폴더의 이해
+# CSS
 
-- Next는 서버입니다.
-- 흔히 FE는 Next 구현 후 Vercel, AWS에 배포합니다.
-- 흔히 BE는 AWS에 배포
-- api 용도입니다.
-- http://localhost:3000/api/hello
-- https://fakestoreapi.com/
+## 인라인 스타일 시트
 
-## api 만들어보기
+- /src/pages/index.tsx
 
-- /src/pages/api/getallgood.ts
-- http://localhost:3000/api/getallgood
+```tsx
+export default function Home() {
+  return <h1 style={{ color: "red" }}>home</h1>;
+}
+```
+
+## 외부 css 연결 파일(Next에서는 page에 연결할 수 없다)
+
+- /src/pages/index.css
+- `_app.tsx` 이외에는 절대로 `.css`를 사용할 수 없다.
+
+```css
+.title {
+  color: green;
+}
+```
+
+- 오류 발생 예
+
+```tsx
+import "./index.css";
+
+export default function Home() {
+  return <h1 className="title">home</h1>;
+}
+```
+
+## Next에서는 module css를 사용한다.
+
+- index.module.css로 수정
+
+```tsx
+import styles from "./index.module.css";
+
+export default function Home() {
+  return <h1 className={styles.title}>home</h1>;
+}
+```
