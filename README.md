@@ -510,17 +510,17 @@ export default GoodItem;
 
 ## 이미지를 최적화해주는 Next
 
-- Next는 이미지를 자동으로 용량 최적화
-- Next는 스크롤시 화면에 이미지가 보일 때쯤 로딩
-- lazy loading
-- 곤란한 상황(외부 경로 이미지는 설정이 필요)
+- Next 는 이미지를 자동으로 용량 최적화 해줌.
+- Next 는 스크롤시 화면에 이미지가 보일 때줌 로딩합니다.
+- layzy loading
+- 곤란한 상황 (외부경로 이미지는 설정이 필요)
 
 ### 1. Image 컴포넌트
 
 - width
-- heigh
+- height
 
-### 2. 외부 URL 이밎 경로 사용시 설정
+### 2. 외부 URL 이미지 경로 사용시 설정
 
 - `next.config.mjs` 추가
 
@@ -544,20 +544,14 @@ export default nextConfig;
 ## 검색 컴포넌트 및 페이지 작성
 
 - /src/components/search-layout.tsx
-- /src/components/search-layout.module.css
-- /src/pages/\_app.tsx에 일단 추가
 
 ```tsx
 import React, { useState } from "react";
 import styles from "@/components/search-layout.module.css";
 import { useRouter } from "next/router";
-
 const SearchLayout = () => {
-  //useRouter
-  const router = useRouter();
-  // useState
   const [search, setSearch] = useState<string>("");
-  // handle
+  const router = useRouter();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
@@ -567,8 +561,10 @@ const SearchLayout = () => {
     }
   };
   const handleSubmit = () => {
+    // console.log(search);
     if (search.trim() === "") {
-      alert("검색어를 입력하세요");
+      alert("검색어를 입력하세요.");
+      return;
     }
     router.push(`/search?keyword=${search}`);
     setSearch("");
@@ -578,16 +574,12 @@ const SearchLayout = () => {
       <div className={styles.container}>
         <input
           type="text"
-          placeholder="검색어를 입력하세요"
           value={search}
-          onChange={(e) => {
-            handleChange(e);
-          }}
           onKeyDown={(e) => handleKeyEnter(e)}
+          onChange={(e) => handleChange(e)}
+          placeholder="검색어를 입력하세요."
         />
-        <button type="button" onClick={handleSubmit}>
-          검색
-        </button>
+        <button onClick={handleSubmit}>검색</button>
       </div>
     </div>
   );
@@ -596,17 +588,72 @@ const SearchLayout = () => {
 export default SearchLayout;
 ```
 
+- /src/components/search-layout.moudle.css
+
+```css
+.container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.container > input {
+  flex: 1;
+  padding: 15px;
+  border: 1px solid rgb(220, 220, 220);
+  border-radius: 5px;
+}
+.container > button {
+  width: 80px;
+  border-radius: 5px;
+  border: none;
+  background-color: rgb(37, 147, 255);
+  color: #fff;
+  cursor: pointer;
+}
+```
+
+- `/src/pages/_app.tsx` 에 일단 추가
+
+```tsx
+import GlobalLayout from "@/components/global-layout";
+import SearchLayout from "@/components/search-layout";
+import "@/styles/globals.css";
+import type { AppProps } from "next/app";
+
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <GlobalLayout>
+      <SearchLayout />
+      <Component {...pageProps} />
+    </GlobalLayout>
+  );
+}
+```
+
 ## 검색 페이지
 
 - /src/pages/search.module.css 생성
+
+```css
+.container {
+  display: flex;
+  flex-direction: column;
+}
+.container > h4 > strong {
+  color: #e007ad;
+  font-size: 20px;
+  text-decoration: underline;
+}
+```
+
 - /src/pages/search.tsx 수정
 
 ```tsx
-// 앱 라우터 버전 import {useRouter} from "next/navigation"
-import GoodItem from "@/components/good-item";
+import styles from "@/pages/search.module.css";
+// 앱 라우터버전 import { useRouter } from "next/navigation";
 import { useRouter } from "next/router";
 import goods from "@/mock/goods.json";
-import styles from "@/pages/search.module.css";
+import GoodItem from "@/components/good-item";
 
 export default function Page() {
   const router = useRouter();
@@ -614,12 +661,12 @@ export default function Page() {
   return (
     <div className={styles.container}>
       <h4>
-        검색 <strong>{keyword}</strong> 페이지
+        <strong>{keyword}</strong> : 검색 결과
       </h4>
       <div>
-        {goods.map((item) => {
-          return <GoodItem key={item.id} {...item} />;
-        })}
+        {goods.map((item) => (
+          <GoodItem key={item.id} {...item} />
+        ))}
       </div>
     </div>
   );
@@ -629,6 +676,62 @@ export default function Page() {
 ## 제품 상세 페이지
 
 - /src/pages/good/[id].module.css
+
+```css
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.cover_image {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.cover_image::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+.cover_image > img {
+  position: relative;
+  max-height: 350px;
+  height: 100%;
+  border-radius: 5px;
+}
+.title {
+  font-size: 20px;
+  font-weight: bold;
+}
+.title > span {
+  color: gray;
+  font-weight: normal;
+  font-size: 16px;
+}
+.category {
+  color: hotpink;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+.rating {
+  color: gray;
+}
+.description {
+  padding: 20px;
+  color: #000;
+  background-color: rgb(245, 245, 245);
+  line-height: 1.3;
+}
+```
+
 - /src/pages/good/[id].tsx
 
 ```tsx
@@ -652,8 +755,7 @@ export default function Page() {
   return (
     <div className={styles.container}>
       <div className={styles.title}>
-        {title}
-        <span>(${price})</span>
+        {title} <span>(${price})</span>
       </div>
       <div
         className={styles.cover_image}
@@ -671,6 +773,45 @@ export default function Page() {
 }
 ```
 
-# 공통 레이아웃에서 다양한 레이아웃 적용해보기
+# 공통 레이아웃에 다양한 레이아웃 적용해 보기
 
 - `_app.tsx`
+
+```tsx
+import GlobalLayout from "@/components/global-layout";
+import "@/styles/globals.css";
+import { NextPage } from "next";
+import type { AppProps } from "next/app";
+import { ReactNode } from "react";
+
+// 속성을 추가해준다. 확장도 한다.
+// NextPage 타입을 확장해서 개발자가 추가로 ReactNode 를 1개 추가한 타입
+type NextPageWithLayout = NextPage & {
+  getLayout?: (page: ReactNode) => ReactNode;
+};
+
+export default function App({
+  Component,
+  pageProps,
+}: AppProps & {
+  Component: NextPageWithLayout;
+}) {
+  const getLayout = Component.getLayout ?? ((page: ReactNode) => page);
+  return <GlobalLayout>{getLayout(<Component {...pageProps} />)}</GlobalLayout>;
+}
+```
+
+- /src/pages/index.tsx 그리고, /src/pages/search.tsx
+
+```tsx
+// JS 에서는 함수도 객체다.
+// 객체는 속성을 추가할 수 있다.
+Home.getLayout = (page: ReactNode) => {
+  return <SearchLayout>{page}</SearchLayout>;
+};
+----
+
+Page.getLayout = (page: ReactNode) => {
+  return <SearchLayout>{page}</SearchLayout>;
+};
+```
