@@ -6,8 +6,6 @@ import Image from "next/image";
 const GoodItem = ({
   id,
   title,
-  price,
-  description,
   category,
   image,
   rating,
