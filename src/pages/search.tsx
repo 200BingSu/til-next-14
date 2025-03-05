@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import styles from "@/pages/search.module.css";
 // 앱 라우터버전 import { useRouter } from "next/navigation";
 import { useRouter } from "next/router";

@@ -1,21 +1,22 @@
 import GoodItem from "@/components/good-item";
 import SearchLayout from "@/components/search-layout";
 import { fetchGoods } from "@/lib/fetch-good";
-import { fetchRandomGood } from "@/lib/fetch-random-good";
+import { fetchRandomGoods } from "@/lib/fetch-random-good";
 import styles from "@/pages/index.module.css";
-import { InferGetServerSidePropsType, InferGetStaticPropsType } from "next";
+import { InferGetStaticPropsType } from "next";
 import { ReactNode } from "react";
 
 export const getStaticProps = async () => {
   const [allGoods, randomGoods] = await Promise.all([
     fetchGoods(),
-    fetchRandomGood(),
+    fetchRandomGoods(),
   ]);
   return {
     props: {
       allGoods: allGoods,
       randomGoods: randomGoods,
     },
+    revalidate: 60,
   };
 };
 

@@ -1,10 +1,6 @@
 import { fetchOneGood } from "@/lib/fetch-one-good";
 import styles from "@/pages/good/[id].module.css";
-import {
-  GetServerSidePropsContext,
-  InferGetServerSidePropsType,
-  InferGetStaticPropsType,
-} from "next";
+import { GetServerSidePropsContext, InferGetStaticPropsType } from "next";
 import Image from "next/image";
 // 라우터가 동적인 경로가 필요로 한 상황이다.
 // http://localhost:3000/good/[id]   ===> 파라메터
@@ -30,6 +26,7 @@ export async function getStaticProps(context: GetServerSidePropsContext) {
     props: {
       data: data,
     },
+    revalidate: 60,
   };
 }
 
